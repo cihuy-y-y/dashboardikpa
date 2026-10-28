@@ -11,7 +11,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Muat fungsi bantu global (formatAngka, warnaCapaian, formatLabelPeriode)
+        require_once app_path('Helpers/helpers.php');
     }
 
     /**
