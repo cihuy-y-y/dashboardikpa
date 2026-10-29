@@ -1,10 +1,16 @@
 <?php
 
+use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\PengaturanController;
+use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\SatkerController;
 use App\Http\Controllers\UploadController;
+use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
 
 // Hanya untuk tamu (belum login)
@@ -31,9 +37,31 @@ Route::middleware('auth')->group(function () {
         ->where('periode', '[0-9A-Za-z\-]+')
         ->name('upload.destroy');
 
-    // ---- Halaman sementara. Akan diganti controller asli di tahap berikutnya ----
-    Route::view('/laporan', 'placeholder', ['judul' => 'Laporan', 'tahap' => 'D'])->name('laporan');
-    Route::view('/pengaturan', 'placeholder', ['judul' => 'Pengaturan', 'tahap' => 'E'])->name('pengaturan');
-    Route::view('/profil', 'placeholder', ['judul' => 'Profil', 'tahap' => 'E'])->name('profil');
-    Route::view('/admin/approval', 'placeholder', ['judul' => 'Approval User', 'tahap' => 'E'])->name('admin.approval');
+    // ---- Tahap D ----
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
+    Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
+
+    // ---- Tahap E: profil & pengaturan akun (semua user yang login) ----
+    Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+    Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+
+    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan');
+    Route::put('/pengaturan/username', [PengaturanController::class, 'updateUsername'])->name('pengaturan.username');
+    Route::put('/pengaturan/password', [PengaturanController::class, 'updatePassword'])->name('pengaturan.password');
+
+    // ---- Tahap E: khusus ADMIN ----
+    Route::middleware(AdminOnly::class)->group(function () {
+        // Backup & restore database
+        Route::post('/pengaturan/backup', [BackupController::class, 'buat'])->name('backup.buat');
+        Route::post('/pengaturan/restore', [BackupController::class, 'pulihkan'])->name('backup.pulihkan');
+        Route::get('/pengaturan/backup/{nama}', [BackupController::class, 'unduh'])
+            ->where('nama', '[A-Za-z0-9_\-\.]+\.sql')->name('backup.unduh');
+        Route::delete('/pengaturan/backup/{nama}', [BackupController::class, 'hapus'])
+            ->where('nama', '[A-Za-z0-9_\-\.]+\.sql')->name('backup.hapus');
+
+        // Approval user
+        Route::get('/admin/approval', [ApprovalController::class, 'index'])->name('admin.approval');
+        Route::post('/admin/approval/{pengguna}/status', [ApprovalController::class, 'ubahStatus'])->name('admin.approval.status');
+        Route::delete('/admin/approval/{pengguna}', [ApprovalController::class, 'destroy'])->name('admin.approval.hapus');
+    });
 });
