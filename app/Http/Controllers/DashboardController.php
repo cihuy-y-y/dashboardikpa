@@ -24,6 +24,8 @@ class DashboardController extends Controller
             'distribusiNilai' => IkpaData::getDistribusiNilaiSatker($filters),
             'top10Terbaik'    => IkpaData::getTop10SatkerTerbaik($filters),
             'top10Terbawah'   => IkpaData::getTop10SatkerTerbawah($filters),
+            'kategoriPengingat' => IkpaData::getKategoriPengingatIkpa($filters),
+            'daftarSatkerKategori' => IkpaData::getDaftarSatkerKategori($filters),
         ]);
     }
 }
