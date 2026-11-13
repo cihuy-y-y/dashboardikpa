@@ -4,6 +4,8 @@ use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BerandaController;
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\PeringatanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PengaturanController;
@@ -14,6 +16,11 @@ use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
 
 // Hanya untuk tamu (belum login)
+Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+Route::get('/peringatan', [PeringatanController::class, 'index'])
+    ->name('peringatan');
+// Halaman publik (tanpa login)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.proses');
@@ -26,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // ---- Tahap B ----
-    Route::get('/', [BerandaController::class, 'index'])->name('beranda');
+    Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/data-satker', [SatkerController::class, 'index'])->name('data-satker');
 
