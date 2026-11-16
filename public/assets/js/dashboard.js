@@ -197,7 +197,7 @@ function initChartPerkembangan() {
             scales: {
                 x: {
                     grid: {
-                        display: false
+                        display: '#e2e8f0'
                     },
                     ticks: {
                         color: '#475569',
