@@ -393,7 +393,7 @@
 <section class="wrap section">
     <div class="cta reveal">
         <div class="cta__text">
-            <h2>Petugas Satker atau KPPN?</h2>
+            <h2>Petugas KPPN?</h2>
             <p>Masuk ke dashboard untuk melihat detail lengkap per indikator, grafik perkembangan, laporan, dan unggah data IKPA.</p>
             <div class="cta__btns">
                 @auth
