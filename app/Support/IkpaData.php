@@ -818,6 +818,159 @@ class IkpaData
         return $hasil;
     }
 
+
+/**
+ * Indikator pengingat kategori nilai IKPA.
+ * Mengikuti filter Dashboard dan menghitung satker unik.
+ */
+public static function getKategoriPengingatIkpa($filters = [])
+{
+    $satker = self::getSemuaSatker($filters);
+
+    $hasil = [
+        'A' => 0,
+        'B' => 0,
+        'C' => 0,
+        'D' => 0,
+        'total' => count($satker),
+    ];
+
+    foreach ($satker as $item) {
+        $nilai = (float) ($item['nilai_akhir'] ?? 0);
+
+        if ($nilai >= 95) {
+            $hasil['A']++;
+        } elseif ($nilai >= 89) {
+            $hasil['B']++;
+        } elseif ($nilai >= 70) {
+            $hasil['C']++;
+        } else {
+            $hasil['D']++;
+        }
+    }
+
+    return $hasil;
+}
+
+/**
+ * Daftar satker berdasarkan kategori IKPA beserta rincian evaluasi.
+ * Mengikuti filter Dashboard dan menghitung rata-rata per satker.
+ */
+public static function getDaftarSatkerKategori($filters = [])
+{
+    $hasil = [
+        'A' => [],
+        'B' => [],
+        'C' => [],
+        'D' => [],
+        'total' => 0,
+    ];
+
+    $daftarSatker = self::getSemuaSatker($filters);
+
+    $konfigurasi = [
+        'revisi_dipa' => [
+            'nama' => 'Revisi DIPA',
+            'bobot' => 10,
+            'aspek' => 'Perencanaan',
+        ],
+        'deviasi_dipa' => [
+            'nama' => 'Deviasi Halaman III DIPA',
+            'bobot' => 15,
+            'aspek' => 'Perencanaan',
+        ],
+        'penyerapan' => [
+            'nama' => 'Penyerapan Anggaran',
+            'bobot' => 20,
+            'aspek' => 'Pelaksanaan',
+        ],
+        'belanja_kontraktual' => [
+            'nama' => 'Belanja Kontraktual',
+            'bobot' => 10,
+            'aspek' => 'Pelaksanaan',
+        ],
+        'penyelesaian_tagihan' => [
+            'nama' => 'Penyelesaian Tagihan',
+            'bobot' => 10,
+            'aspek' => 'Pelaksanaan',
+        ],
+        'up_tup' => [
+            'nama' => 'Pengelolaan UP dan TUP',
+            'bobot' => 10,
+            'aspek' => 'Pelaksanaan',
+        ],
+        'capaian_output' => [
+            'nama' => 'Capaian Output',
+            'bobot' => 25,
+            'aspek' => 'Hasil',
+        ],
+    ];
+
+    foreach ($daftarSatker as $satker) {
+        $nilai = (float) $satker['nilai_akhir'];
+
+        if ($nilai >= 95) {
+            $kategori = 'A';
+        } elseif ($nilai >= 89) {
+            $kategori = 'B';
+        } elseif ($nilai >= 70) {
+            $kategori = 'C';
+        } else {
+            $kategori = 'D';
+        }
+
+        $rincian = [];
+        $aspek = [
+            'Perencanaan' => 0,
+            'Pelaksanaan' => 0,
+            'Hasil' => 0,
+        ];
+
+        foreach ($konfigurasi as $key => $item) {
+            $nilaiIndikator = (float) (
+                $satker['indikator'][$key] ?? 0
+            );
+
+            $kontribusi = round(
+                $nilaiIndikator * $item['bobot'] / 100,
+                2
+            );
+
+            $aspek[$item['aspek']] += $kontribusi;
+
+            $rincian[] = [
+                'kode' => $key,
+                'nama' => $item['nama'],
+                'nilai' => $nilaiIndikator,
+                'bobot' => $item['bobot'],
+                'kontribusi' => $kontribusi,
+                'aspek' => $item['aspek'],
+            ];
+        }
+
+        $hasil[$kategori][] = [
+            'kode_satker' => $satker['kode_satker'],
+            'nama_satker' => $satker['nama_satker'],
+            'nilai_akhir' => $nilai,
+            'kategori' => $kategori,
+            'aspek' => $aspek,
+            'indikator' => $rincian,
+        ];
+
+        $hasil['total']++;
+    }
+
+    // Satker dengan nilai terendah ditampilkan lebih dahulu.
+    foreach (['A', 'B', 'C', 'D'] as $kategori) {
+        usort($hasil[$kategori], function ($a, $b) {
+            return $a['nilai_akhir'] <=> $b['nilai_akhir'];
+        });
+    }
+
+    return $hasil;
+}
+
+
     /**
      * Grafik 4: Distribusi nilai akhir satker berdasarkan rentang nilai
      */
@@ -986,7 +1139,7 @@ class IkpaData
     /**
      * Konversi key periode ('jan'..'jul') menjadi nomor bulan (1-7)
      */
-    public static function getBulanDariPeriodeKey($periodeKey)
+    public static function getBulanDariPeriodeKey(string $periodeKey): ?int
     {
         $map = [
             'jan' => 1, 'feb' => 2, 'mar' => 3, 'apr' => 4,
