@@ -1,759 +1,451 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Monitoring IKPA - Dashboard Publik</title>
+    <title>Dashboard IKPA - Satuan Kerja Kabupaten Solok</title>
+    <meta name="description" content="Lihat nilai Indikator Kinerja Pelaksanaan Anggaran (IKPA) satuan kerja di Kabupaten Solok.">
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/logo.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <style>
-        /* =====================================
-           RESET DAN DASAR
-        ===================================== */
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: #f4f6f9;
-            color: #333;
-        }
-
-        /* =====================================
-           HEADER
-        ===================================== */
-
-        header {
-            background: linear-gradient(120deg, #12345a, #1d4d7e);
-            color: white;
-            padding: 24px 7%;
-            box-shadow: 0 4px 15px rgba(18, 52, 90, 0.12);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-icon {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(255,255,255,0.14);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            font-size: 23px;
-        }
-
-        header h1 {
-            font-size: 23px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        header p {
-            color: #dce6f1;
-            font-size: 12px;
-        }
-
-        .btn-login {
-            display: inline-flex;
-            align-items: center;
-            gap: 9px;
-            background: white;
-            color: #12345a;
-            padding: 11px 23px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 700;
-            white-space: nowrap;
-            transition: 0.3s ease;
-        }
-
-        .btn-login:hover {
-            background: #e5edf5;
-            transform: translateY(-2px);
-        }
-
-        /* =====================================
-           CONTAINER
-        ===================================== */
-
-        .container {
-            width: 86%;
-            max-width: 1200px;
-            margin: 35px auto;
-        }
-
-        /* =====================================
-           JUDUL HALAMAN
-        ===================================== */
-
-        .judul {
-            margin-bottom: 25px;
-        }
-
-        .judul-label {
-            color: #1d4d7e;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            margin-bottom: 7px;
-        }
-
-        .judul h2 {
-            color: #12345a;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 7px;
-        }
-
-        .judul p {
-            color: #778493;
-            font-size: 13px;
-        }
-
-        /* =====================================
-           RINGKASAN STATISTIK
-        ===================================== */
-
-        .ringkasan {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 22px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #e8edf3;
-            box-shadow: 0 4px 15px rgba(18, 52, 90, 0.05);
-            transition: 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 9px 22px rgba(18, 52, 90, 0.10);
-        }
-
-        .card-icon {
-            width: 55px;
-            height: 55px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #eef3f8;
-            color: #12345a;
-            border-radius: 12px;
-            font-size: 25px;
-        }
-
-        .card p {
-            color: #778493;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .card h3 {
-            color: #12345a;
-            font-size: 27px;
-            font-weight: 700;
-        }
-
-        /* =====================================
-           PENCARIAN
-        ===================================== */
-
-        .pencarian {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            border: 1px solid #e8edf3;
-            box-shadow: 0 4px 15px rgba(18, 52, 90, 0.05);
-        }
-
-        .section-heading {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 18px;
-        }
-
-        .section-heading i {
-            color: #1d4d7e;
-            font-size: 20px;
-        }
-
-        .section-heading h3 {
-            color: #12345a;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .form-cari {
-            display: flex;
-            gap: 12px;
-        }
-
-        .form-cari input {
-            flex: 1;
-            min-width: 0;
-            padding: 13px 15px;
-            border: 1px solid #dce4ed;
-            border-radius: 8px;
-            background: #f8fafc;
-            outline: none;
-            font-size: 12px;
-            transition: 0.3s ease;
-        }
-
-        .form-cari input:focus {
-            background: white;
-            border-color: #1d4d7e;
-            box-shadow: 0 0 0 3px rgba(29, 77, 126, 0.10);
-        }
-
-        .form-cari button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: #12345a;
-            color: white;
-            border: none;
-            padding: 12px 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: 0.3s ease;
-        }
-
-        .form-cari button:hover {
-            background: #1d4d7e;
-        }
-
-        /* =====================================
-           BAGIAN TABEL
-        ===================================== */
-
-        .bagian {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            overflow-x: auto;
-            border: 1px solid #e8edf3;
-            box-shadow: 0 4px 15px rgba(18, 52, 90, 0.05);
-        }
-
-        .bagian h3 {
-            color: #12345a;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .bagian-deskripsi {
-            margin: 7px 0 20px;
-            color: #778493;
-            font-size: 12px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 650px;
-        }
-
-        th, td {
-            padding: 14px;
-            border-bottom: 1px solid #edf0f4;
-            text-align: left;
-            font-size: 12px;
-        }
-
-        th {
-            background: #eef3f8;
-            color: #12345a;
-            font-weight: 700;
-        }
-
-        td {
-            color: #596675;
-        }
-
-        tbody tr:hover {
-            background: #f8fafc;
-        }
-
-        /* =====================================
-           STATUS
-        ===================================== */
-
-        .status {
-            display: inline-block;
-            padding: 6px 11px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .aman {
-            background: #e0f4e8;
-            color: #18743b;
-        }
-
-        .peringatan {
-            background: #fff0f0;
-            color: #b42318;
-        }
-
-        .kosong {
-            color: #778493;
-            padding: 20px 0;
-            font-size: 13px;
-        }
-
-        /* =====================================
-           FOOTER
-        ===================================== */
-
-        footer {
-            text-align: center;
-            padding: 25px 15px;
-            color: #778493;
-            font-size: 11px;
-            margin-top: 35px;
-            border-top: 1px solid #e8edf3;
-            background: white;
-        }
-
-        footer strong {
-            color: #12345a;
-        }
-
-        /* =====================================
-           ANIMASI SCROLL REVEAL
-        ===================================== */
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition:
-                opacity 0.6s ease,
-                transform 0.6s ease;
-        }
-
-        .reveal.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .reveal {
-                opacity: 1;
-                transform: none;
-                transition: none;
-            }
-
-            .card,
-            .btn-login,
-            .form-cari button {
-                transition: none;
-            }
-        }
-
-        /* =====================================
-           RESPONSIVE
-        ===================================== */
-
-        @media (max-width: 768px) {
-
-            header {
-                padding: 22px 5%;
-            }
-
-            .container {
-                width: 92%;
-            }
-
-            .header-content {
-                align-items: flex-start;
-            }
-
-            header h1 {
-                font-size: 19px;
-            }
-
-            .ringkasan {
-                gap: 15px;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-        }
-
-        @media (max-width: 600px) {
-
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .header-title {
-                align-items: flex-start;
-            }
-
-            .ringkasan {
-                grid-template-columns: 1fr;
-            }
-
-            .judul h2 {
-                font-size: 20px;
-            }
-
-            .form-cari {
-                flex-direction: column;
-            }
-
-            .form-cari button {
-                width: 100%;
-            }
-
-            .bagian,
-            .pencarian {
-                padding: 18px;
-            }
-
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/landing.css') }}?v=1">
 </head>
-
 <body>
+@php
+    $fmt = fn ($n, $d = 2) => number_format((float) $n, $d, ',', '.');
+    $labelPeriode = $periode ? formatLabelPeriode($periode) : 'Belum tersedia';
+    $persenMemenuhi = $jumlahSatker > 0 ? round($jumlahMemenuhi / $jumlahSatker * 100) : 0;
+    $labelTren = $tren->map(fn ($t) => formatLabelPeriode($t->periode))->values();
+    $nilaiTren = $tren->map(fn ($t) => round((float) $t->rata_rata, 2))->values();
+@endphp
 
-{{-- HEADER --}}
-<header>
-    <div class="header-content">
-
-        <div class="header-title">
-            <div class="header-icon">
-                <i class="bi bi-bar-chart-line-fill"></i>
-            </div>
-
-            <div>
-                <h1>Dashboard Monitoring IKPA</h1>
-                <p>Informasi dan Pemantauan Kinerja Pelaksanaan Anggaran Satker</p>
-            </div>
-        </div>
-
-        <a href="{{ route('login') }}" class="btn-login">
-            <i class="bi bi-box-arrow-in-right"></i>
-            Login
+{{-- ============================ NAVBAR ============================ --}}
+<header class="nav" id="nav">
+    <div class="nav__bar">
+        <a href="#beranda" class="nav__brand" aria-label="Dashboard IKPA">
+            <img src="{{ asset('assets/img/login/logo-instansi.png') }}" alt="Kementerian Keuangan RI, DJPb, InTrezz">
         </a>
 
+        <nav class="nav__links" id="navLinks" aria-label="Menu utama">
+            <a href="#beranda">Beranda</a>
+            <a href="#statistik">Statistik</a>
+            <a href="#peringkat">Peringkat</a>
+            <a href="#daftar">Daftar Satker</a>
+            <a href="#tentang">Tentang IKPA</a>
+            <div class="nav__actions nav__actions--mobile">
+                @auth
+                    <a href="{{ route('beranda') }}" class="btn btn--primary"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                @else
+                    <a href="{{ route('register') }}" class="btn btn--ghost"><i class="bi bi-person-plus-fill"></i> Register</a>
+                    <a href="{{ route('login') }}" class="btn btn--primary"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                @endauth
+            </div>
+        </nav>
+
+        <div class="nav__actions nav__actions--desktop">
+            @auth
+                <a href="{{ route('beranda') }}" class="btn btn--primary"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            @else
+                <a href="{{ route('register') }}" class="btn btn--ghost"><i class="bi bi-person-plus-fill"></i> Register</a>
+                <a href="{{ route('login') }}" class="btn btn--primary"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+            @endauth
+        </div>
+
+        <button class="nav__toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false">
+            <i class="bi bi-list"></i>
+        </button>
     </div>
 </header>
 
-{{-- KONTEN --}}
-<div class="container">
+{{-- ============================== HERO ============================== --}}
+<section class="hero" id="beranda">
+    <svg class="hero__waves" viewBox="0 0 1672 941" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+            <linearGradient id="lBright" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#2f8bff"/><stop offset="1" stop-color="#0a55d8"/>
+            </linearGradient>
+            <linearGradient id="lNavy" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#0a4bc4"/><stop offset="1" stop-color="#012a6e"/>
+            </linearGradient>
+            <linearGradient id="lHill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#9ec9ff" stop-opacity=".9"/><stop offset="1" stop-color="#eef5ff" stop-opacity=".95"/>
+            </linearGradient>
+        </defs>
+        <path d="M900 330 C1050 190 1250 100 1420 108 C1540 114 1640 160 1672 190 L1672 400 Z" fill="url(#lHill)"/>
+        <path d="M900 235 C1000 175 1100 70 1165 0 L1240 0 C1180 85 1090 170 1015 212 Z" fill="#b4d3ff" opacity=".85"/>
+        <path d="M1015 212 C1110 160 1210 70 1285 0 L1545 0 C1430 80 1310 135 1195 172 C1130 192 1070 205 1015 212 Z" fill="url(#lBright)"/>
+        <path d="M1105 190 C1260 130 1430 58 1565 0 L1672 0 L1672 200 C1570 128 1430 108 1305 135 C1225 152 1155 172 1105 190 Z" fill="url(#lNavy)"/>
+    </svg>
 
-    {{-- JUDUL --}}
-    <div class="judul reveal">
+    <div class="dots dots--a"></div>
 
-        <div class="judul-label">
-            INFORMASI PUBLIK
+    <div class="wrap hero__grid">
+        <div class="hero__text reveal">
+            <span class="chip"><i class="bi bi-calendar-check-fill"></i> Data Periode {{ $labelPeriode }}</span>
+
+            <p class="hero__hi">Selamat Datang di</p>
+            <h1 class="hero__title">Dashboard <span>IKPA</span></h1>
+            <p class="hero__area"><i class="bi bi-geo-alt-fill"></i> Satuan Kerja Kabupaten Solok</p>
+
+            <p class="hero__tagline">Transparansi <i>&bull;</i> Akuntabilitas <i>&bull;</i> Kinerja Lebih Baik</p>
+            <p class="hero__desc">
+                Lihat nilai Indikator Kinerja Pelaksanaan Anggaran (IKPA) satuan kerja Anda,
+                bandingkan dengan target, dan pantau perkembangannya setiap periode.
+            </p>
+
+            <form class="search" id="heroSearch" action="{{ route('landing') }}#daftar" method="GET" role="search">
+                @if ($periode)
+                    <input type="hidden" name="periode" value="{{ $periode }}">
+                @endif
+                <i class="bi bi-search search__icon"></i>
+                <input type="text" name="cari" id="heroCari" value="{{ $keyword }}"
+                       placeholder="Ketik kode atau nama satker Anda..." autocomplete="off"
+                       aria-label="Cari satker">
+                <button type="submit" class="btn btn--primary">Cari Nilai</button>
+            </form>
+
+            <div class="hero__links">
+                <a href="#peringkat"><i class="bi bi-trophy-fill"></i> Lihat peringkat</a>
+                <a href="#tentang"><i class="bi bi-info-circle-fill"></i> Apa itu IKPA?</a>
+            </div>
         </div>
 
-        <h2>Informasi Kinerja Satker</h2>
+        <div class="hero__visual reveal">
+            <img src="{{ asset('assets/img/login/gedung-kppn.png') }}" alt="Gedung KPPN Solok" class="hero__building">
 
-        <p>
-            Periode: {{ $periode ?? 'Belum tersedia' }}
-        </p>
+            <div class="float float--a">
+                <div class="float__icon"><i class="bi bi-graph-up-arrow"></i></div>
+                <div>
+                    <small>Rata-rata IKPA</small>
+                    <strong>{{ $fmt($rataRata) }}</strong>
+                    <em>Target &ge; {{ $target }}</em>
+                </div>
+            </div>
 
+            <div class="float float--b">
+                <div class="float__icon float__icon--green"><i class="bi bi-patch-check-fill"></i></div>
+                <div>
+                    <small>Memenuhi target</small>
+                    <strong>{{ $jumlahMemenuhi }} <span>dari {{ $jumlahSatker }} satker</span></strong>
+                    <div class="mini"><i style="width: {{ $persenMemenuhi }}%"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ============================ STATISTIK ============================ --}}
+<main>
+<section class="wrap stats" id="statistik">
+    <div class="stats__head reveal">
+        <div>
+            <span class="eyebrow">Ringkasan</span>
+            <h2>Statistik Nilai IKPA</h2>
+        </div>
+
+        @if ($daftarPeriode->count() > 0)
+            <form method="GET" action="{{ route('landing') }}#statistik" class="period">
+                <label for="periodeSelect"><i class="bi bi-calendar3"></i> Periode</label>
+                <select name="periode" id="periodeSelect" onchange="this.form.submit()">
+                    @foreach ($daftarPeriode as $p)
+                        <option value="{{ $p }}" {{ $p == $periode ? 'selected' : '' }}>{{ formatLabelPeriode($p) }}</option>
+                    @endforeach
+                </select>
+                @if ($keyword !== '')
+                    <input type="hidden" name="cari" value="{{ $keyword }}">
+                @endif
+                <noscript><button class="btn btn--primary" type="submit">Tampilkan</button></noscript>
+            </form>
+        @endif
     </div>
 
-    {{-- RINGKASAN --}}
-    <div class="ringkasan">
-
-        <div class="card reveal">
-
-            <div class="card-icon">
-                <i class="bi bi-buildings"></i>
-            </div>
-
+    <div class="stats__grid">
+        <article class="stat reveal">
+            <div class="stat__icon"><i class="bi bi-buildings-fill"></i></div>
             <div>
-                <p>Jumlah Satker</p>
-
-                <h3>
-                    {{ number_format($jumlahSatker, 0, ',', '.') }}
-                </h3>
+                <small>Jumlah Satker</small>
+                <strong data-count="{{ $jumlahSatker }}" data-decimals="0">{{ $fmt($jumlahSatker, 0) }}</strong>
+                <em>Terdata pada periode ini</em>
             </div>
+        </article>
 
-        </div>
-
-        <div class="card reveal">
-
-            <div class="card-icon">
-                <i class="bi bi-graph-up-arrow"></i>
-            </div>
-
+        <article class="stat reveal">
+            <div class="stat__icon stat__icon--blue"><i class="bi bi-bar-chart-line-fill"></i></div>
             <div>
-                <p>Rata-rata Nilai IKPA</p>
-
-                <h3>
-                    {{ number_format($rataRata, 2, ',', '.') }}
-                </h3>
+                <small>Rata-rata Nilai IKPA</small>
+                <strong data-count="{{ round($rataRata, 2) }}" data-decimals="2">{{ $fmt($rataRata) }}</strong>
+                <em>Tertinggi {{ $fmt($nilaiTertinggi) }} &middot; Terendah {{ $fmt($nilaiTerendah) }}</em>
             </div>
+        </article>
 
-        </div>
+        <article class="stat reveal">
+            <div class="stat__icon stat__icon--green"><i class="bi bi-patch-check-fill"></i></div>
+            <div>
+                <small>Memenuhi Target</small>
+                <strong data-count="{{ $jumlahMemenuhi }}" data-decimals="0">{{ $fmt($jumlahMemenuhi, 0) }}</strong>
+                <em>{{ $persenMemenuhi }}% satker bernilai &ge; {{ $target }}</em>
+            </div>
+        </article>
 
+        <article class="stat reveal">
+            <div class="stat__icon stat__icon--red"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div>
+                <small>Perlu Perhatian</small>
+                <strong data-count="{{ $jumlahPerhatian }}" data-decimals="0">{{ $fmt($jumlahPerhatian, 0) }}</strong>
+                <em>Bernilai di bawah {{ $target }}</em>
+            </div>
+        </article>
+    </div>
+</section>
+
+@if ($jumlahSatker > 0)
+{{-- ============================ PERINGKAT ============================ --}}
+<section class="wrap section" id="peringkat">
+    <div class="section__head reveal">
+        <span class="eyebrow">Peringkat</span>
+        <h2>Satker dengan Nilai IKPA Tertinggi</h2>
+        <p>Lima satuan kerja dengan nilai IKPA terbaik pada periode {{ $labelPeriode }}.</p>
     </div>
 
-    {{-- PENCARIAN --}}
-    <div class="pencarian reveal">
+    <div class="top">
+        @foreach ($teratas as $i => $s)
+            <article class="top__card top__card--{{ $i + 1 }} reveal">
+                <span class="medal medal--{{ $s->peringkat <= 3 ? $s->peringkat : 'x' }}">
+                    @if ($s->peringkat <= 3)
+                        <i class="bi bi-trophy-fill"></i>
+                    @else
+                        {{ $s->peringkat }}
+                    @endif
+                </span>
+                <div class="ring" style="--p: {{ min(100, max(0, $s->nilai_akhir)) }}">
+                    <span>{{ $fmt($s->nilai_akhir) }}</span>
+                </div>
+                <h3>{{ $s->nama_satker }}</h3>
+                <small>Kode {{ $s->kode_satker }}</small>
+                <span class="badge badge--{{ $s->nilai_akhir >= $target ? 'ok' : 'warn' }}">
+                    {{ $s->nilai_akhir >= $target ? 'Memenuhi Target' : 'Perlu Perhatian' }}
+                </span>
+            </article>
+        @endforeach
+    </div>
+</section>
 
-        <div class="section-heading">
-            <i class="bi bi-search"></i>
-            <h3>Cari Data Satker</h3>
-        </div>
+{{-- ============================== GRAFIK ============================== --}}
+<section class="wrap section">
+    <div class="charts">
+        <article class="panel reveal">
+            <div class="panel__head">
+                <h3><i class="bi bi-graph-up"></i> Perkembangan Rata-rata IKPA</h3>
+                <small>Per periode yang telah dipublikasikan</small>
+            </div>
+            <div class="chart chart--line"><canvas id="chartTren"></canvas></div>
+        </article>
 
-        <form action="{{ url('/') }}" method="GET" class="form-cari">
+        <article class="panel reveal">
+            <div class="panel__head">
+                <h3><i class="bi bi-pie-chart-fill"></i> Status Pencapaian</h3>
+                <small>Target nilai IKPA &ge; {{ $target }}</small>
+            </div>
+            <div class="chart chart--donut"><canvas id="chartStatus"></canvas></div>
+            <ul class="legend">
+                <li><i class="dot dot--ok"></i> Memenuhi target <b>{{ $jumlahMemenuhi }}</b></li>
+                <li><i class="dot dot--warn"></i> Perlu perhatian <b>{{ $jumlahPerhatian }}</b></li>
+            </ul>
+        </article>
+    </div>
+</section>
 
-            <input
-                type="text"
-                name="cari"
-                placeholder="Masukkan kode atau nama satker..."
-                value="{{ $keyword }}"
-            >
+{{-- ============================ DAFTAR SATKER ============================ --}}
+<section class="wrap section" id="daftar">
+    <div class="section__head reveal">
+        <span class="eyebrow">Daftar Lengkap</span>
+        <h2>Nilai IKPA Seluruh Satker</h2>
+        <p>Cari satker Anda berdasarkan kode atau nama, lalu lihat nilai dan statusnya.</p>
+    </div>
 
-            <button type="submit">
+    <div class="panel reveal">
+        <div class="toolbar">
+            <div class="toolbar__search">
                 <i class="bi bi-search"></i>
-                Cari Satker
-            </button>
-
-        </form>
-
-    </div>
-
-    {{-- HASIL PENCARIAN --}}
-    @if($keyword)
-
-        <div class="bagian reveal">
-
-            <div class="section-heading">
-                <i class="bi bi-list-check"></i>
-                <h3>Hasil Pencarian: "{{ $keyword }}"</h3>
+                <input type="text" id="tblCari" value="{{ $keyword }}" placeholder="Cari kode atau nama satker..." autocomplete="off" aria-label="Cari satker">
             </div>
 
-            @if($hasilPencarian->count() > 0)
+            <div class="seg" id="tblFilter" role="group" aria-label="Filter status">
+                <button type="button" class="seg__btn is-active" data-filter="semua">Semua</button>
+                <button type="button" class="seg__btn" data-filter="ok">Memenuhi Target</button>
+                <button type="button" class="seg__btn" data-filter="warn">Perlu Perhatian</button>
+            </div>
 
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>No.</th>
-                            <th>Kode Satker</th>
-                            <th>Nama Satker</th>
-                            <th>Nilai IKPA</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        @foreach($hasilPencarian as $index => $satker)
-
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-
-                                <td>{{ $satker->kode_satker }}</td>
-
-                                <td>{{ $satker->nama_satker }}</td>
-
-                                <td>
-                                    {{ number_format($satker->nilai_akhir, 2, ',', '.') }}
-                                </td>
-
-                                <td>
-                                    @if($satker->nilai_akhir >= 89)
-                                        <span class="status aman">
-                                            Memenuhi Target
-                                        </span>
-                                    @else
-                                        <span class="status peringatan">
-                                            Perlu Perhatian
-                                        </span>
-                                    @endif
-                                </td>
-                            </tr>
-
-                        @endforeach
-
-                    </tbody>
-
-                </table>
-
-            @else
-
-                <p class="kosong">
-                    Data satker tidak ditemukan.
-                </p>
-
-            @endif
-
+            <select id="tblUrut" class="toolbar__sort" aria-label="Urutkan">
+                <option value="peringkat">Urut: Peringkat</option>
+                <option value="nama">Urut: Nama (A-Z)</option>
+                <option value="kode">Urut: Kode Satker</option>
+            </select>
         </div>
 
-    @endif
-
-    {{-- DATA SATKER PILIHAN --}}
-    <div class="bagian reveal">
-
-        <div class="section-heading">
-            <i class="bi bi-table"></i>
-            <h3>Data Satker Pilihan</h3>
-        </div>
-
-        <p class="bagian-deskripsi">
-            Beberapa data satker ditampilkan secara acak dari periode terbaru.
-        </p>
-
-        @if($satkerAcak->count() > 0)
-
-            <table>
-
+        <div class="table-wrap">
+            <table class="tbl" id="tbl">
                 <thead>
                     <tr>
-                        <th>No.</th>
+                        <th>Peringkat</th>
                         <th>Kode Satker</th>
                         <th>Nama Satker</th>
                         <th>Nilai IKPA</th>
                         <th>Status</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
-                    @foreach($satkerAcak as $index => $satker)
-
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-
-                            <td>{{ $satker->kode_satker }}</td>
-
-                            <td>{{ $satker->nama_satker }}</td>
-
+                    @foreach ($semuaSatker as $s)
+                        <tr data-nama="{{ strtolower($s->nama_satker) }}"
+                            data-kode="{{ $s->kode_satker }}"
+                            data-peringkat="{{ $s->peringkat }}"
+                            data-status="{{ $s->nilai_akhir >= $target ? 'ok' : 'warn' }}">
+                            <td><span class="rank">{{ $s->peringkat }}</span></td>
+                            <td class="mono">{{ $s->kode_satker }}</td>
+                            <td class="nama">{{ $s->nama_satker }}</td>
                             <td>
-                                {{ number_format($satker->nilai_akhir, 2, ',', '.') }}
+                                <div class="score">
+                                    <b>{{ $fmt($s->nilai_akhir) }}</b>
+                                    <div class="bar {{ $s->nilai_akhir >= $target ? '' : 'bar--warn' }}">
+                                        <i style="width: {{ min(100, max(0, $s->nilai_akhir)) }}%"></i>
+                                    </div>
+                                </div>
                             </td>
-
                             <td>
-                                @if($satker->nilai_akhir >= 89)
-                                    <span class="status aman">
-                                        Memenuhi Target
-                                    </span>
-                                @else
-                                    <span class="status peringatan">
-                                        Perlu Perhatian
-                                    </span>
-                                @endif
+                                <span class="badge badge--{{ $s->nilai_akhir >= $target ? 'ok' : 'warn' }}">
+                                    {{ $s->nilai_akhir >= $target ? 'Memenuhi Target' : 'Perlu Perhatian' }}
+                                </span>
                             </td>
                         </tr>
-
                     @endforeach
-
                 </tbody>
-
             </table>
 
-        @else
+            <div class="empty" id="tblKosong" hidden>
+                <i class="bi bi-search"></i>
+                <p>Satker tidak ditemukan. Coba kata kunci atau filter lain.</p>
+            </div>
+        </div>
 
-            <p class="kosong">
-                Belum ada data satker untuk ditampilkan.
-            </p>
+        <div class="pager">
+            <span id="pagerInfo"></span>
+            <div class="pager__btns" id="pagerBtns"></div>
+        </div>
+    </div>
+</section>
+@else
+<section class="wrap section">
+    <div class="panel empty-state reveal">
+        <i class="bi bi-hourglass-split"></i>
+        <h3>Data nilai IKPA belum tersedia</h3>
+        <p>Data akan tampil setelah petugas mengunggah nilai IKPA periode terbaru.</p>
+    </div>
+</section>
+@endif
 
-        @endif
-
+{{-- ============================ TENTANG IKPA ============================ --}}
+<section class="wrap section" id="tentang">
+    <div class="section__head reveal">
+        <span class="eyebrow">Tentang IKPA</span>
+        <h2>Bagaimana Nilai IKPA Dihitung?</h2>
+        <p>
+            Indikator Kinerja Pelaksanaan Anggaran (IKPA) menilai kualitas pelaksanaan anggaran satker
+            dari tiga aspek berikut. Satker dinyatakan memenuhi target apabila nilai akhir &ge; {{ $target }}.
+        </p>
     </div>
 
-</div>
+    <div class="aspek">
+        <article class="aspek__card reveal">
+            <div class="aspek__icon"><i class="bi bi-clipboard2-check-fill"></i></div>
+            <h3>Kualitas Perencanaan Anggaran</h3>
+            <ul>
+                <li>Revisi DIPA</li>
+                <li>Deviasi Halaman III DIPA</li>
+            </ul>
+        </article>
 
-{{-- FOOTER --}}
-<footer>
-    <strong>Dashboard Monitoring IKPA</strong>
-    <p>Informasi dan Pemantauan Kinerja Pelaksanaan Anggaran Satker</p>
+        <article class="aspek__card reveal">
+            <div class="aspek__icon aspek__icon--blue"><i class="bi bi-cash-coin"></i></div>
+            <h3>Kualitas Pelaksanaan Anggaran</h3>
+            <ul>
+                <li>Penyerapan Anggaran</li>
+                <li>Belanja Kontraktual</li>
+                <li>Penyelesaian Tagihan</li>
+                <li>Pengelolaan UP dan TUP</li>
+            </ul>
+        </article>
+
+        <article class="aspek__card reveal">
+            <div class="aspek__icon aspek__icon--green"><i class="bi bi-bullseye"></i></div>
+            <h3>Kualitas Hasil Pelaksanaan Anggaran</h3>
+            <ul>
+                <li>Capaian Output</li>
+                <li>Dispensasi SPM sebagai pengurang nilai</li>
+            </ul>
+        </article>
+    </div>
+</section>
+
+{{-- ============================ AJAKAN LOGIN ============================ --}}
+<section class="wrap section">
+    <div class="cta reveal">
+        <div class="cta__text">
+            <h2>Petugas Satker atau KPPN?</h2>
+            <p>Masuk ke dashboard untuk melihat detail lengkap per indikator, grafik perkembangan, laporan, dan unggah data IKPA.</p>
+            <div class="cta__btns">
+                @auth
+                    <a href="{{ route('beranda') }}" class="btn btn--white"><i class="bi bi-speedometer2"></i> Buka Dashboard</a>
+                @else
+                    <a href="{{ route('login') }}" class="btn btn--white"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                    <a href="{{ route('register') }}" class="btn btn--outline"><i class="bi bi-person-plus-fill"></i> Daftar Akun</a>
+                @endauth
+            </div>
+        </div>
+        <div class="cta__shield">@include('auth.partials.perisai')</div>
+    </div>
+</section>
+</main>
+
+{{-- ============================== FOOTER ============================== --}}
+<footer class="footer">
+    <div class="wrap footer__grid">
+        <div>
+            <img src="{{ asset('assets/img/login/logo-instansi.png') }}" alt="Kementerian Keuangan RI, DJPb, InTrezz" class="footer__logo">
+            <p>Dashboard IKPA - Informasi dan pemantauan kinerja pelaksanaan anggaran satuan kerja Kabupaten Solok.</p>
+        </div>
+        <div>
+            <h4>Menu</h4>
+            <a href="#statistik">Statistik</a>
+            <a href="#peringkat">Peringkat</a>
+            <a href="#daftar">Daftar Satker</a>
+            <a href="#tentang">Tentang IKPA</a>
+        </div>
+        <div>
+            <h4>Akses</h4>
+            <a href="{{ route('login') }}">Login Petugas</a>
+            <a href="{{ route('register') }}">Daftar Akun</a>
+        </div>
+    </div>
+    <div class="footer__bottom">
+        <div class="wrap">
+            <small>Sumber data: file Excel IKPA yang diunggah setiap periode &nbsp;|&nbsp; &copy; {{ date('Y') }} {{ config('ikpa.name') }}</small>
+        </div>
+    </div>
 </footer>
 
-{{-- JAVASCRIPT SCROLL REVEAL --}}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    const elements = document.querySelectorAll('.reveal');
-
-    if (!('IntersectionObserver' in window)) {
-        elements.forEach(element => {
-            element.classList.add('show');
-        });
-        return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-
-        entries.forEach(entry => {
-
-            if (entry.isIntersecting) {
-
-                entry.target.classList.add('show');
-
-                observer.unobserve(entry.target);
-
-            }
-
-        });
-
-    }, {
-        threshold: 0.15
-    });
-
-    elements.forEach(element => {
-        observer.observe(element);
-    });
-
-});
+    window.LANDING = {
+        target: @json($target),
+        labelTren: @json($labelTren),
+        nilaiTren: @json($nilaiTren),
+        memenuhi: @json($jumlahMemenuhi),
+        perhatian: @json($jumlahPerhatian)
+    };
 </script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="{{ asset('assets/js/landing.js') }}?v=1"></script>
 </body>
 </html>

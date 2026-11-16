@@ -7,57 +7,76 @@ use Illuminate\Support\Facades\DB;
 
 class LandingController extends Controller
 {
+    /** Batas nilai IKPA yang dianggap memenuhi target */
+    private const TARGET = 89;
+
     public function index(Request $request)
     {
-        // Mengambil periode terbaru
-        $periode = DB::table('monitoring_ikpa')
+        // ---- Daftar periode & periode terpilih (default: terbaru) ----
+        $daftarPeriode = DB::table('monitoring_ikpa')
             ->whereNotNull('periode')
+            ->distinct()
             ->orderByDesc('periode')
-            ->value('periode');
+            ->pluck('periode');
 
-        // Query dasar untuk periode terbaru
-        $dataSatker = DB::table('monitoring_ikpa')
-            ->where('periode', $periode)
-            ->whereNotNull('nilai_akhir');
-
-        // Ringkasan data
-        $jumlahSatker = (clone $dataSatker)
-            ->distinct('kode_satker')
-            ->count('kode_satker');
-
-        $rataRata = (clone $dataSatker)
-            ->avg('nilai_akhir') ?? 0;
-
-        // Menampilkan 6 satker secara acak
-        $satkerAcak = (clone $dataSatker)
-            ->select('kode_satker', 'nama_satker', 'nilai_akhir')
-            ->inRandomOrder()
-            ->limit(6)
-            ->get();
-
-        // Pencarian berdasarkan kode atau nama satker
-        $keyword = $request->input('cari');
-
-        $hasilPencarian = collect();
-
-        if ($keyword) {
-            $hasilPencarian = (clone $dataSatker)
-                ->where(function ($query) use ($keyword) {
-                    $query->where('kode_satker', 'like', "%{$keyword}%")
-                        ->orWhere('nama_satker', 'like', "%{$keyword}%");
-                })
-                ->select('kode_satker', 'nama_satker', 'nilai_akhir')
-                ->orderBy('nama_satker')
-                ->get();
+        $periode = $request->string('periode')->toString();
+        if (! $daftarPeriode->contains($periode)) {
+            $periode = $daftarPeriode->first();
         }
 
-        return view('landing', compact(
-            'periode',
-            'jumlahSatker',
-            'rataRata',
-            'satkerAcak',
-            'keyword',
-            'hasilPencarian'
-        ));
+        // ---- Seluruh satker pada periode terpilih, urut nilai tertinggi ----
+        $semuaSatker = DB::table('monitoring_ikpa')
+            ->where('periode', $periode)
+            ->whereNotNull('nilai_akhir')
+            ->select('kode_satker', 'nama_satker', 'nilai_akhir')
+            ->orderByDesc('nilai_akhir')
+            ->orderBy('nama_satker')
+            ->get();
+
+        // Peringkat: nilai yang sama mendapat peringkat yang sama
+        $peringkat = 0;
+        $nilaiSebelumnya = null;
+        foreach ($semuaSatker as $i => $satker) {
+            $satker->nilai_akhir = (float) $satker->nilai_akhir;
+            if ($nilaiSebelumnya === null || $satker->nilai_akhir < $nilaiSebelumnya) {
+                $peringkat = $i + 1;
+            }
+            $satker->peringkat = $peringkat;
+            $nilaiSebelumnya = $satker->nilai_akhir;
+        }
+
+        // ---- Ringkasan ----
+        $jumlahSatker   = $semuaSatker->count();
+        $rataRata       = $jumlahSatker > 0 ? $semuaSatker->avg('nilai_akhir') : 0;
+        $jumlahMemenuhi = $semuaSatker->where('nilai_akhir', '>=', self::TARGET)->count();
+        $jumlahPerhatian = $jumlahSatker - $jumlahMemenuhi;
+        $nilaiTertinggi = $semuaSatker->max('nilai_akhir') ?? 0;
+        $nilaiTerendah  = $semuaSatker->min('nilai_akhir') ?? 0;
+        $teratas        = $semuaSatker->take(5);
+
+        // ---- Tren rata-rata per periode (untuk grafik) ----
+        $tren = DB::table('monitoring_ikpa')
+            ->whereNotNull('nilai_akhir')
+            ->whereNotNull('periode')
+            ->selectRaw('periode, AVG(nilai_akhir) AS rata_rata')
+            ->groupBy('periode')
+            ->orderBy('periode')
+            ->get();
+
+        return view('landing', [
+            'target'          => self::TARGET,
+            'daftarPeriode'   => $daftarPeriode,
+            'periode'         => $periode,
+            'keyword'         => trim($request->string('cari')->toString()),
+            'semuaSatker'     => $semuaSatker,
+            'teratas'         => $teratas,
+            'jumlahSatker'    => $jumlahSatker,
+            'rataRata'        => $rataRata,
+            'jumlahMemenuhi'  => $jumlahMemenuhi,
+            'jumlahPerhatian' => $jumlahPerhatian,
+            'nilaiTertinggi'  => $nilaiTertinggi,
+            'nilaiTerendah'   => $nilaiTerendah,
+            'tren'            => $tren,
+        ]);
     }
 }
