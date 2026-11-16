@@ -436,6 +436,7 @@
     </div>
 </footer>
 
+
 <script>
     window.LANDING = {
         target: @json($target),
@@ -445,7 +446,12 @@
         perhatian: @json($jumlahPerhatian)
     };
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
-<script src="{{ asset('assets/js/landing.js') }}?v=1"></script>
+
+<!-- Library Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<!-- JavaScript Landing -->
+<script src="{{ asset('assets/js/landing.js') }}?v=2"></script>
+
 </body>
 </html>
