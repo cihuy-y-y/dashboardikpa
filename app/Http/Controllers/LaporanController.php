@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Support\IkpaData;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
@@ -62,8 +63,10 @@ class LaporanController extends Controller
             : IkpaData::getRekapSeluruhSatker($periode, $filters);
 
         if ($format === 'pdf') {
-            // Halaman siap cetak; simpan sebagai PDF lewat Ctrl+P di browser
-            return view('laporan-pdf', compact('jenis', 'periodeLabel', 'rows'));
+            $pdf = Pdf::loadView('laporan-pdf', compact('jenis', 'periodeLabel', 'rows'))
+            ->setPaper('a4', $jenis === 'ba' ? 'portrait' : 'landscape');
+            
+            return $pdf->download('Laporan_' . $jenis . '_' . $periode . '.pdf');
         }
 
         if ($format === 'excel') {
