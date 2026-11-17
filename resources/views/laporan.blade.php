@@ -181,9 +181,7 @@
             <a href="{{ route('laporan.export', ['format' => 'pdf'] + $queryExport) }}" class="btn btn-sm btn-danger" target="_blank">
                 <i class="bi bi-file-earmark-pdf"></i> Export PDF
             </a>
-            <button type="button" class="btn btn-sm btn-outline-primary" onclick="printLaporan()">
-                <i class="bi bi-printer"></i> Print
-            </button>
+        
         </div>
     </div>
 
