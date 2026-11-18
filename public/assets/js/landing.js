@@ -2,12 +2,10 @@
    Landing Page Dashboard IKPA  (public/assets/js/landing.js)
    - menu HP, animasi muncul, hitung naik angka
    - pencarian / filter / urutan / halaman tabel satker
-   - grafik Chart.js (data dari window.LANDING di landing.blade.php)
+   (grafik dibuat di server sebagai SVG/CSS, jadi tidak butuh library lain)
    ===================================================================== */
 (function () {
     'use strict';
-
-    var DATA = window.LANDING || {};
 
     /* ---------- Navbar ---------- */
     var nav = document.getElementById('nav');
@@ -211,6 +209,12 @@
                 state.q = heroCari.value.trim().toLowerCase();
                 state.hal = 1;
                 render();
+                var tampilSatu = rows.filter(function (tr) { return cocok(tr); });
+                if (state.q && tampilSatu.length === 1) {
+                    // hasil tepat satu satker: langsung tampilkan rincian & langkah perbaikan
+                    document.dispatchEvent(new CustomEvent('ikpa:rincian', { detail: { kode: tampilSatu[0].getAttribute('data-kode') } }));
+                    return;
+                }
                 var top = document.getElementById('daftar').getBoundingClientRect().top + window.scrollY - 90;
                 window.scrollTo({ top: top, behavior: reduce ? 'auto' : 'smooth' });
             });
@@ -219,88 +223,4 @@
         render();
     }
 
-    /* ---------- Grafik ---------- */
-    if (typeof Chart === 'undefined') { return; }
-    Chart.defaults.font.family = "'Poppins', Arial, sans-serif";
-    Chart.defaults.color = '#6c7a99';
-
-    var elTren = document.getElementById('chartTren');
-    if (elTren && DATA.labelTren && DATA.labelTren.length) {
-        var ctx = elTren.getContext('2d');
-        var grad = ctx.createLinearGradient(0, 0, 0, 300);
-        grad.addColorStop(0, 'rgba(29,123,255,.35)');
-        grad.addColorStop(1, 'rgba(29,123,255,0)');
-
-        new Chart(elTren, {
-            type: 'line',
-            data: {
-                labels: DATA.labelTren,
-                datasets: [
-                    {
-                        label: 'Rata-rata IKPA',
-                        data: DATA.nilaiTren,
-                        borderColor: '#0a5be0',
-                        backgroundColor: grad,
-                        fill: true,
-                        tension: 0.35,
-                        borderWidth: 3,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#0a5be0',
-                        pointBorderWidth: 3
-                    },
-                    {
-                        label: 'Target (' + DATA.target + ')',
-                        data: DATA.labelTren.map(function () { return DATA.target; }),
-                        borderColor: '#e0a200',
-                        borderDash: [6, 6],
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
-                    tooltip: {
-                        callbacks: {
-                            label: function (c) { return ' ' + c.dataset.label + ': ' + format(c.parsed.y, 2); }
-                        }
-                    }
-                },
-                scales: {
-                    y: { suggestedMin: 60, suggestedMax: 100, grid: { color: '#e9f0fb' }, border: { display: false } },
-                    x: { grid: { display: false }, border: { display: false } }
-                }
-            }
-        });
-    }
-
-    var elStatus = document.getElementById('chartStatus');
-    if (elStatus) {
-        new Chart(elStatus, {
-            type: 'doughnut',
-            data: {
-                labels: ['Memenuhi target', 'Perlu perhatian'],
-                datasets: [{
-                    data: [DATA.memenuhi, DATA.perhatian],
-                    backgroundColor: ['#2fb65f', '#ef5350'],
-                    borderColor: '#fff',
-                    borderWidth: 4,
-                    hoverOffset: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '68%',
-                plugins: { legend: { display: false } }
-            }
-        });
-    }
 })();
